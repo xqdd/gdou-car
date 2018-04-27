@@ -1,0 +1,43 @@
+server:
+  port: 8080
+spring:
+  main:
+    banner-mode: console
+  output:
+    ansi:
+      enabled: always
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/gdou_car?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=true
+    username: XQDD
+    password: 1234
+    driver-class-name: com.mysql.jdbc.Driver
+    tomcat:
+      max-wait: 10000
+      max-idle: 40
+      max-active: 50
+      test-on-borrow: true
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    database: mysql
+    properties:
+      hinbernate:
+        default_catalog: gdou_car
+        default_chema: gdou_car
+        dialect: org.hibernate.dialect.MySQL5Dialect
+#     禁用entity
+      javax:
+        persistence:
+          validation:
+            mode: NONE
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 21MB
+logging:
+  level:
+    com:
+      xqdd: debug
+#    root: debug
