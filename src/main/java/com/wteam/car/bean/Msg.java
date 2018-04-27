@@ -10,7 +10,6 @@ import java.util.Map;
 @JsonInclude(Include.NON_NULL)
 public class Msg {
 
-
     public static Integer CODE_FAILED = 0;
     public static Integer CODE_SUCCESS = 1;
 
@@ -36,6 +35,10 @@ public class Msg {
     private Object data;
 
     private String msg;
+
+    public static Msg success(String msg) {
+        return new Msg(CODE_SUCCESS, msg);
+    }
 
 
     public void setData(Object data) {

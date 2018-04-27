@@ -39,5 +39,6 @@ spring:
 logging:
   level:
     com:
-      xqdd: debug
-#    root: debug
+      xqdd: error
+    root: error
+  path: runtime/logs/

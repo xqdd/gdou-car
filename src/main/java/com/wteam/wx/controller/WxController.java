@@ -10,7 +10,6 @@ import com.wteam.wx.utils.Oauth2Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +18,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.Properties;
 
+@RequestMapping(produces = "application/json; charset=utf-8")
 @Controller
 public class WxController extends BaseController {
 
@@ -40,7 +40,7 @@ public class WxController extends BaseController {
      * @param response
      * @return
      */
-    @RequestMapping(value = "wxPay/login", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "wxWeb/login")
     @ResponseBody
     public Msg login(String code, String state, HttpSession session, HttpServletResponse response) {
         if (code == null || code.trim().isEmpty()) {
@@ -94,10 +94,10 @@ public class WxController extends BaseController {
 
 
     //用户网页登录
-    @RequestMapping(name = "webLoginUser", method = RequestMethod.GET)
+    @RequestMapping("getWebLoginUrl")
     @ResponseBody
-    public Msg webLoginUrl(String callbackUrl) {
-        return Msg.successData(Oauth2Utils.generateUrl(callbackUrl));
+    public Msg getWebLoginUrl(String callbackUrl) {
+        return Msg.success(Oauth2Utils.generateUrl(callbackUrl));
     }
 
 
