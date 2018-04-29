@@ -1,0 +1,22 @@
+四月 29, 2018 11:28:22 上午 io.github.yedaxia.apidocs.LogUtils info
+信息: info: project type not set, try to figure out...
+四月 29, 2018 11:28:22 上午 io.github.yedaxia.apidocs.LogUtils info
+信息: info: start find controllers in path : D:\code\Java\Projects\gdoucar\src\main\java\
+四月 29, 2018 11:28:22 上午 io.github.yedaxia.apidocs.LogUtils info
+信息: info: find controller file : WxController.java
+四月 29, 2018 11:28:22 上午 io.github.yedaxia.apidocs.LogUtils info
+信息: info: generate api docs start...
+四月 29, 2018 11:28:22 上午 io.github.yedaxia.apidocs.LogUtils info
+信息: info: start to parse controller file : WxController.java
+四月 29, 2018 11:28:22 上午 io.github.yedaxia.apidocs.LogUtils info
+信息: info: we think Object should not be an enum type
+四月 29, 2018 11:28:22 上午 io.github.yedaxia.apidocs.LogUtils warn
+警告: warning!! Cannot find java file , in java file : D:\code\Java\Projects\gdoucar\src\main\java\com\wteam\car\bean\Msg.java, className : Object, we cannot found more information of it, you've better to make it a JavaBean
+四月 29, 2018 11:28:22 上午 io.github.yedaxia.apidocs.LogUtils info
+信息: info: start to generate docs for controller file : WxController.java
+四月 29, 2018 11:28:22 上午 io.github.yedaxia.apidocs.LogUtils info
+信息: info: success to generate docs for controller file : WxController.java
+四月 29, 2018 11:28:22 上午 io.github.yedaxia.apidocs.LogUtils info
+信息: info: generate api docs done !!!
+四月 29, 2018 11:28:22 上午 io.github.yedaxia.apidocs.LogUtils warn
+警告: warning!! docs config properties miss, we don't think you want to post to rap!

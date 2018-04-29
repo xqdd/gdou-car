@@ -2,3 +2,5 @@
 ## 涉及技术
 - spring boot
 - spring data jpa
+- 延迟队列
+- JApiDocs

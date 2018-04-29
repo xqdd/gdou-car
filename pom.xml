@@ -16,7 +16,6 @@
     <version>1.0-SNAPSHOT</version>
 
 
-
     <!-- Package as an executable jar -->
     <build>
         <!--设置打包的文件名-->
@@ -184,8 +183,14 @@
         </dependency>
 
 
-    </dependencies>
+        <!--集成japidocs自动生成api文档框架-->
+        <dependency>
+            <groupId>io.github.yedaxia</groupId>
+            <artifactId>japidocs</artifactId>
+            <version>1.2</version>
+        </dependency>
 
+    </dependencies>
 
 
     <!--设置打包格式-->
