@@ -1,11 +1,11 @@
 package com.wteam.car.bean.entity;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.util.Date;
 
+
+@Entity
+@Table(name = "`order`")
 public class Order {
 
     @Id
@@ -47,7 +47,7 @@ public class Order {
     //接单时间
     private Date orderTime;
 
-    //状态
+    //状态,0等待接单，1被接单，2订单完成，3订单取消，4订单超时
     private Integer status;
 
 
