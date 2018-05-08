@@ -1,5 +1,6 @@
 package com.wteam.wx.controller;
 
+import com.apidoc.annotation.*;
 import com.mysql.jdbc.StringUtils;
 import com.wteam.car.base.BaseController;
 import com.wteam.car.bean.Msg;
@@ -8,11 +9,10 @@ import com.wteam.car.service.UserService;
 import com.wteam.wx.bean.WxToken;
 import com.wteam.wx.bean.WxUser;
 import com.wteam.wx.utils.Oauth2Utils;
-import io.github.yedaxia.apidocs.ApiDoc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
@@ -22,11 +22,8 @@ import java.util.Optional;
 import java.util.Properties;
 
 
-/**
- *微信登录接口
- */
-@RequestMapping(produces = "application/json; charset=utf-8")
 @Controller
+@Api(name = "微信登录接口", mapping = "/")
 public class WxController extends BaseController {
 
 
@@ -38,15 +35,7 @@ public class WxController extends BaseController {
     }
 
 
-    /**
-     * 微信网页登录
-     *
-     * @param code
-     * @param state
-     * @param session
-     * @param response
-     * @return
-     */
+    //微信网页登录
     @GetMapping(value = "wxWeb/login")
     @ResponseBody
     public Msg login(String code, String state, HttpSession session, HttpServletResponse response) {
@@ -96,15 +85,19 @@ public class WxController extends BaseController {
 
 
     /**
-     * 生成微信登录授权url
      * @param callbackUrl 回调url
      * @return
      */
     @GetMapping(value = "wxWeb/getLoginUrl")
+    @ApiAction(name = "生成微信登录授权url", mapping = "wxWeb/getLoginUrl")
+    @ApiReqParams({@ApiParam(name = "callbackUrl", description = "回调url")})
+    @ApiRespParams({
+            @ApiParam(name = "code", defaultValue = "1"),
+            @ApiParam(name = "data", description = "微信登录url"),
+    })
     @ResponseBody
-    @ApiDoc
-    public Msg getWebLoginUrl(String callbackUrl) {
-        return Msg.success(Oauth2Utils.generateUrl(callbackUrl));
+    public Msg getWebLoginUrl(@RequestBody String callbackUrl) {
+        return Msg.successDataMsg(Oauth2Utils.generateUrl(callbackUrl));
     }
 
 

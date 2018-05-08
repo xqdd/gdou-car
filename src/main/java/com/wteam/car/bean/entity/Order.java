@@ -1,7 +1,16 @@
 package com.wteam.car.bean.entity;
 
+import com.wteam.car.utils.jsonview.OrderGroup;
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
-import java.util.Date;
+import javax.validation.Valid;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 
 @Entity
@@ -9,53 +18,73 @@ import java.util.Date;
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @GeneratedValue(generator = "uuid")
+    @NotEmpty(groups = {OrderGroup.id.class})
+    private String id;
 
-    @OneToOne
+    //级联更新：指A类新增或者变化，会级联B对象（新增或者变化）
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @Valid
+    @NotNull(groups = {OrderGroup.PassengerOrder.add.class})
     private User passenger;
 
-    @OneToOne
+    @ManyToOne
     private User driver;
 
     //出发地
+    @NotEmpty(groups = {OrderGroup.PassengerOrder.add.class})
     private String departure;
 
     //目的地
+    @NotEmpty(groups = {OrderGroup.PassengerOrder.add.class})
     private String destination;
 
-    private String price;
+    @Min(value = 0, groups = {OrderGroup.PassengerOrder.add.class})
+    private BigDecimal price;
 
     //预约时间
-    private String appointmentTime;
+    @NotNull(groups = {OrderGroup.PassengerOrder.add.class})
+    @Future(groups = {OrderGroup.PassengerOrder.add.class})
+    private Timestamp appointmentTime;
 
     //有效时长
+    @Min(value = 0, groups = {OrderGroup.PassengerOrder.add.class})
+    @NotNull(groups = {OrderGroup.PassengerOrder.add.class})
     private Integer validTime;
 
     //备注
     private String ps;
 
-    private Date crateTime;
+    private Timestamp createTime;
 
-    private Date cancelTime;
+    private Timestamp cancelTime;
 
-    private Date completeTime;
+    private Timestamp completeTime;
 
     //失效时间
-    private Date invalidTime;
+    private Timestamp invalidedTime;
 
     //接单时间
-    private Date orderTime;
+    private Timestamp orderTime;
 
-    //状态,0等待接单，1被接单，2订单完成，3订单取消，4订单超时
+    //状态,0等待接单，1被接单，2订单完成，3订单取消，4订单超时，5订单已重置
     private Integer status;
 
 
-    public Integer getId() {
+    public Timestamp getAppointmentTime() {
+        return appointmentTime;
+    }
+
+    public void setAppointmentTime(Timestamp appointmentTime) {
+        this.appointmentTime = appointmentTime;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -91,21 +120,6 @@ public class Order {
         this.destination = destination;
     }
 
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public String getAppointmentTime() {
-        return appointmentTime;
-    }
-
-    public void setAppointmentTime(String appointmentTime) {
-        this.appointmentTime = appointmentTime;
-    }
 
     public Integer getValidTime() {
         return validTime;
@@ -123,51 +137,60 @@ public class Order {
         this.ps = ps;
     }
 
-    public Date getCrateTime() {
-        return crateTime;
+    public Timestamp getCreateTime() {
+        return createTime;
     }
 
-    public void setCrateTime(Date crateTime) {
-        this.crateTime = crateTime;
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
     }
 
-    public Date getCancelTime() {
+    public Timestamp getCancelTime() {
         return cancelTime;
     }
 
-    public void setCancelTime(Date cancelTime) {
+    public void setCancelTime(Timestamp cancelTime) {
         this.cancelTime = cancelTime;
     }
 
-    public Date getCompleteTime() {
+    public Timestamp getCompleteTime() {
         return completeTime;
     }
 
-    public void setCompleteTime(Date completeTime) {
+    public void setCompleteTime(Timestamp completeTime) {
         this.completeTime = completeTime;
     }
 
-    public Date getOrderTime() {
+    public Timestamp getOrderTime() {
         return orderTime;
     }
 
-    public void setOrderTime(Date orderTime) {
+    public void setOrderTime(Timestamp orderTime) {
         this.orderTime = orderTime;
     }
 
     public Integer getStatus() {
         return status;
     }
-
+    //状态,0等待接单，1被接单，2订单完成，3订单取消，4订单超时，5订单已重置
     public void setStatus(Integer status) {
         this.status = status;
     }
 
-    public Date getInvalidTime() {
-        return invalidTime;
+    public Timestamp getInvalidedTime() {
+        return invalidedTime;
     }
 
-    public void setInvalidTime(Date invalidTime) {
-        this.invalidTime = invalidTime;
+    public void setInvalidedTime(Timestamp invalidedTime) {
+        this.invalidedTime = invalidedTime;
+    }
+
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 }

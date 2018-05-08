@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -121,7 +122,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     @Transactional
     public void executeSql(String... sqls) {
         for (String sql : sqls) {
-            if (!com.wteam.car.utils.CommUtils.isBlank(sql)) {
+            if (!StringUtils.isEmpty(sql)) {
                 entityManager.createNativeQuery(sql).executeUpdate();
             }
         }
@@ -154,4 +155,6 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
             return source;
         }
     }
+
+
 }

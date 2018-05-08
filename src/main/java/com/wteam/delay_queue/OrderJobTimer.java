@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 简单延时任务系统
+ * 简单延迟任务系统
  */
 @Component
 public class OrderJobTimer {
@@ -49,7 +49,7 @@ public class OrderJobTimer {
 
     private void sleep() {
         try {
-            TimeUnit.SECONDS.sleep(1L);
+            TimeUnit.SECONDS.sleep(10L);
         } catch (InterruptedException e) {
             log.error("暂停扫描orderJob失败：", e);
         }

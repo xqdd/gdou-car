@@ -7,7 +7,7 @@ import org.redisson.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//延时队列
+//延迟队列
 public class OrderJobQueue {
 
     private static final Logger log = LoggerFactory.getLogger(OrderJobQueue.class);
@@ -32,7 +32,7 @@ public class OrderJobQueue {
 
 
     //获取任务列表
-    public static RScoredSortedSet<OrderJob> getOrderJobs() {
+    static RScoredSortedSet<OrderJob> getOrderJobs() {
         return redissonClient.getScoredSortedSet(key);
     }
 }

@@ -182,23 +182,44 @@
             <version>[3.17,)</version>
         </dependency>
 
-
-        <!--集成japidocs自动生成api文档框架-->
-        <dependency>
-            <groupId>io.github.yedaxia</groupId>
-            <artifactId>japidocs</artifactId>
-            <version>[1.2,)</version>
-        </dependency>
-
+        <!-- https://mvnrepository.com/artifact/org.redisson/redisson -->
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
             <version>[3.6.5,)</version>
         </dependency>
 
+
+        <!--使用api-doc自动生成api文档框架-->
+        <!--<dependency>-->
+        <!--<groupId>com.apidoc</groupId>-->
+        <!--<artifactId>apidoc</artifactId>-->
+        <!--<version>0.0.1-SNAPSHOT</version>-->
+        <!--</dependency>-->
+
+
+        <dependency>
+            <groupId>com.github.liupeng328</groupId>
+            <artifactId>api-doc</artifactId>
+            <version>-SNAPSHOT</version>
+        </dependency>
+
+
+        <!--使用spring 开发工具包-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+        </dependency>
+
     </dependencies>
 
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
     <!--设置打包格式-->
     <packaging>war</packaging>
 

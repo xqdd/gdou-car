@@ -18,7 +18,7 @@ public class OrderJobHandler {
         this.orderService = orderService;
     }
 
-    public Thread getThread(OrderJob job) {
+    Thread getThread(OrderJob job) {
         return new Thread(job);
     }
 
@@ -26,7 +26,7 @@ public class OrderJobHandler {
     public class Thread implements Runnable {
         private OrderJob job;
 
-        public Thread(OrderJob job) {
+        Thread(OrderJob job) {
             this.job = job;
         }
 

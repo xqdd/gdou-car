@@ -14,6 +14,12 @@ public class Msg {
     public static Integer CODE_FAILED = 0;
     public static Integer CODE_SUCCESS = 1;
 
+    private Integer code;
+    private Object data;
+    private String msg;
+    private String debugMsg;
+
+
     public Msg(String msg) {
         this.msg = msg;
     }
@@ -27,16 +33,35 @@ public class Msg {
         this.code = code;
     }
 
+    public Msg(Integer code, String msg, Object data) {
+        this.code = code;
+        this.msg = msg;
+        this.data = data;
+    }
+
+    public Msg(Integer code, String msg, String debugMsg) {
+        this.code = code;
+        this.msg = msg;
+        this.debugMsg = debugMsg;
+    }
 
     private Msg(Integer code, String msg) {
         this.code = code;
         this.msg = msg;
     }
 
+    public static Msg failedDetail(String msg, Object errors) {
+        return new Msg(CODE_FAILED, msg, errors);
+    }
 
-    private Integer code;
-    private Object data;
-    private String msg;
+    public String getDebugMsg() {
+        return debugMsg;
+    }
+
+    public void setDebugMsg(String debugMsg) {
+        this.debugMsg = debugMsg;
+    }
+
 
     public static Msg success(String msg) {
         return new Msg(CODE_SUCCESS, msg);
@@ -77,17 +102,30 @@ public class Msg {
         return new Msg(CODE_FAILED, msg);
     }
 
+    public static Msg failedAndDebug(String msg, String debugMsg) {
+        return new Msg(CODE_FAILED, msg, debugMsg);
+    }
+
 
     public static Msg successData(String... data) {
         return new Msg(CODE_SUCCESS, data2Map(data));
     }
 
-    public static Msg failed(Object data) {
-        return new Msg(CODE_FAILED, data);
-    }
 
     public static Msg failedData(String... data) {
         return new Msg(CODE_FAILED, data2Map(data));
+    }
+
+    public static Msg successDataMsg(String msg) {
+        return Msg.successData("msg", msg);
+    }
+
+    public static Msg successData(Object data) {
+        return new Msg(CODE_SUCCESS, data);
+    }
+
+    public static Msg failed(Object data) {
+        return new Msg(CODE_FAILED, data);
     }
 
 

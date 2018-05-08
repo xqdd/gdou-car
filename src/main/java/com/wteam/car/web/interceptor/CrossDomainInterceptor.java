@@ -11,16 +11,20 @@ public class CrossDomainInterceptor extends HandlerInterceptorAdapter {
 
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        //跨域设置
         response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "GET,POST,HEAD,PUT,DELETE,OPTIONS");
         response.setHeader("Access-Control-Allow-Headers", "range,Origin,Accept, X-Requested-With, Content-Type");
 
+        //contentType设置
+//        response.setContentType("application/json; charset=utf-8");
 
         //设置不缓存
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
         return super.preHandle(request, response, handler);
+
     }
 }

@@ -1,47 +1,63 @@
 package com.wteam.car.web.exception;
 
 import com.wteam.car.bean.Msg;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestControllerAdvice
 public class MyExceptionHandlers {
 
-    @ExceptionHandler(BindException.class)
-    public Object validExceptionHandler(BindException e) {
-        BindingResult result = e.getBindingResult();
-        List<FieldError> fes = result.getFieldErrors();
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    //普通参数校验错误,json参数校验错误
+    @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
+    public Object validExceptionHandler(Exception e) {
+        BindingResult result;
+        if (e instanceof BindException) {
+            result = ((BindException) e).getBindingResult();
+        } else {
+            result = ((MethodArgumentNotValidException) e).getBindingResult();
+        }
         Map<String, String> errors = new HashMap<>();
-        fes.forEach((fe) -> {
-            errors.put(fe.getField(), fe.getDefaultMessage());
-        });
-        return new Msg(Msg.CODE_FAILED, errors);
+        result.getFieldErrors().forEach((fe) -> errors.put(fe.getField(), fe.getDefaultMessage()));
+        return Msg.failed(errors);
     }
 
+
+    //数字格式化错误
     @ExceptionHandler(NumberFormatException.class)
     public Msg numberFormatExceptionHandler(NumberFormatException e) {
         return Msg.failed(e.getLocalizedMessage());
     }
 
 
+    //   上传错误
     @ExceptionHandler(MultipartException.class)
-    public void multipartExceptionHandler() {
-        System.out.println("okk");
-
+    public void multipartExceptionHandler(MultipartException e) {
+        log.error("发生上传错误", e);
     }
 
+
+    //格式转化错误
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public Msg converterError(HttpMessageNotReadableException e) {
+        return Msg.failedAndDebug("参数有误", e.getMessage());
+    }
+
+    //    上传限制错误
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public Msg maxUploadSizeExceededExceptionHandler() {
-        System.out.println("okk22222222222");
-        return Msg.failedData("img", "图片大小不得大于20MB");
+    public void maxUploadSizeExceededExceptionHandler(MaxUploadSizeExceededException e) {
+        log.error("发生上传限制错误", e);
     }
 }

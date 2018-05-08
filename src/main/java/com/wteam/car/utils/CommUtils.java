@@ -11,17 +11,6 @@ public class CommUtils {
     //精确到微秒日期时间格式化
     public final static SimpleDateFormat DATETIME_FORMAT_WITH_MS = new SimpleDateFormat("yyyy年MM月dd号H时m分s.sss秒");
 
-
-    /**
-     * 字符串是否为空
-     *
-     * @param s
-     * @return
-     */
-    public static boolean isBlank(String s) {
-        return s == null || s.trim().length() == 0;
-    }
-
     /**
      * 数组是否为空
      *
@@ -41,6 +30,7 @@ public class CommUtils {
     public static boolean isBlank(List o) {
         return o == null || o.isEmpty();
     }
+
 
 
 }

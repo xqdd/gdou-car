@@ -1,10 +1,16 @@
 package com.wteam.delay_queue;
 
 public class OrderJob {
-    //订单处理类型，0订单过期 1订单完成
+
+    public static enum Type {
+        ORDER_CANCEL_TIME_OUT,
+        ORDER_COMPLETE_TIME_OUT,
+    }
+
+    //订单处理类型，0订单自动过期 1订单自动完成
     private Integer type;
     //订单id
-    private Integer id;
+    private String id;
     //延迟时间点（时间戳）
     private Long delayTime;
 
@@ -16,11 +22,11 @@ public class OrderJob {
         this.type = type;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

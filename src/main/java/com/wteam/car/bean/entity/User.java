@@ -1,7 +1,12 @@
 package com.wteam.car.bean.entity;
 
+import com.wteam.car.utils.jsonview.OrderGroup;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @Entity
 public class User {
@@ -12,14 +17,42 @@ public class User {
 
     private String nickName;
 
+    @NotEmpty(groups = {OrderGroup.PassengerOrder.add.class})
     private String trueName;
 
+    @NotEmpty(groups = {OrderGroup.PassengerOrder.add.class})
     private String phoneNumber;
 
     private String headimgurl;
 
     private String sex;
 
+
+    //作为乘客拥有的订单
+    @OneToMany(mappedBy = "passenger")
+    private List<Order> passengerOrder;
+
+
+    //作为司机拥有的订单
+    @OneToMany(mappedBy = "driver")
+    private List<Order> driverOrders;
+
+
+    public List<Order> getPassengerOrder() {
+        return passengerOrder;
+    }
+
+    public void setPassengerOrder(List<Order> passengerOrder) {
+        this.passengerOrder = passengerOrder;
+    }
+
+    public List<Order> getDriverOrders() {
+        return driverOrders;
+    }
+
+    public void setDriverOrders(List<Order> driverOrders) {
+        this.driverOrders = driverOrders;
+    }
 
     public String getOpenid() {
         return openid;
