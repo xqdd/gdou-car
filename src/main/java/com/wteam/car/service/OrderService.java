@@ -1,7 +1,7 @@
 package com.wteam.car.service;
 
 import com.wteam.car.base.impl.BaseServiceImpl;
-import com.wteam.car.bean.PageInfo;
+import com.wteam.car.bean.interact.request.PageInfo;
 import com.wteam.car.bean.entity.Order;
 import com.wteam.car.bean.entity.User;
 import com.wteam.car.repository.OrderRepository;
@@ -44,7 +44,15 @@ public class OrderService extends BaseServiceImpl<Order, String>
         return orderRepository.countByPassengerAndStatus(passenger, 0);
     }
 
-    public List<Order> getOrderPagesOrderByCreateTime(User passenger, PageInfo pageInfo) {
+    public List<Order> findPassengerOrders(User passenger, PageInfo pageInfo) {
         return orderRepository.findAllByPassengerOrderByCreateTime(passenger, PageRequest.of(pageInfo.getCurrPage() - 1, pageInfo.getPageSize()));
+    }
+
+    public List<Order> findValidOrders(PageInfo pageInfo) {
+        return orderRepository.findAllByStatusOrderByCreateTime(0, PageRequest.of(pageInfo.getCurrPage() - 1, pageInfo.getPageSize()));
+    }
+
+    public List<Order> findDriverOrders(User driver, PageInfo pageInfo) {
+        return orderRepository.findAllByDriverOrderByCreateTime(driver, PageRequest.of(pageInfo.getCurrPage() - 1, pageInfo.getPageSize()));
     }
 }

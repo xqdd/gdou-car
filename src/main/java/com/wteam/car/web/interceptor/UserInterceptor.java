@@ -1,7 +1,7 @@
 package com.wteam.car.web.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wteam.car.bean.Msg;
+import com.wteam.car.bean.interact.response.Msg;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 

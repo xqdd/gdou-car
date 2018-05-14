@@ -1,4 +1,4 @@
-package com.wteam.car.bean;
+package com.wteam.car.bean.interact.request;
 
 
 public class PageInfo {

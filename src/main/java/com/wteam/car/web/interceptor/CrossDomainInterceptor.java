@@ -21,9 +21,9 @@ public class CrossDomainInterceptor extends HandlerInterceptorAdapter {
 //        response.setContentType("application/json; charset=utf-8");
 
         //设置不缓存
-        response.setHeader("Cache-Control", "no-cache");
-        response.setHeader("Pragma", "no-cache");
-        response.setDateHeader("Expires", 0);
+//        response.setHeader("Cache-Control", "no-cache");
+//        response.setHeader("Pragma", "no-cache");
+//        response.setDateHeader("Expires", 0);
         return super.preHandle(request, response, handler);
 
     }

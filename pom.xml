@@ -201,7 +201,7 @@
         <dependency>
             <groupId>com.github.liupeng328</groupId>
             <artifactId>api-doc</artifactId>
-            <version>-SNAPSHOT</version>
+            <version>83f6af6f79</version>
         </dependency>
 
 
@@ -210,6 +210,15 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
         </dependency>
+
+        <!--小程序用户信息解密-->
+        <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.59</version>
+        </dependency>
+
 
     </dependencies>
 

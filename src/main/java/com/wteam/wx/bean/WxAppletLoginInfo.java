@@ -1,6 +1,6 @@
 package com.wteam.wx.bean;
 
-public class WxMiniAppUser {
+public class WxAppletLoginInfo {
     //用户唯一标识
     private String openid;
     //会话密钥

@@ -1,8 +1,10 @@
 package com.wteam.wx.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wteam.wx.bean.WxAppletLoginInfo;
 import com.wteam.wx.bean.WxToken;
 import com.wteam.wx.bean.WxUser;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +21,7 @@ public class Oauth2Utils {
     private static final Logger log = LoggerFactory.getLogger(Oauth2Utils.class);
 
     /**
-     * 生成授权链接
+     * 生成微信网页登录授权链接
      *
      * @param callbackUrl
      * @return
@@ -37,7 +39,7 @@ public class Oauth2Utils {
         try {
             url = url.replaceAll("REDIRECT_URI",
                     URLEncoder.encode(p.getProperty("web_redirect_uri"), "utf-8"));
-            url = url.replaceAll("STATE", URLEncoder.encode(callbackUrl == null ? "" : callbackUrl, "utf-8"));
+            url = url.replaceAll("STATE", URLEncoder.encode(StringUtils.isBlank(callbackUrl) ? "" : callbackUrl, "utf-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             log.error("生成跳转url失败：" + url, e);
@@ -90,6 +92,29 @@ public class Oauth2Utils {
             log.error("获取用户信息失败：" + jsonText, e);
         }
         return null;
+    }
+
+
+    /**
+     * 用code获取小程序登录信息
+     * @param code
+     * @return
+     */
+    public static Object login_mini_app(String code) {
+        String url = "https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code";
+        String jsonText = "";
+        Properties p = new Properties();
+        try {
+            p.load(Oauth2Utils.class.getClassLoader().getResourceAsStream("wx.properties"));
+            url = url.replaceAll("APPID", p.getProperty("mini_appid"));
+            url = url.replaceAll("SECRET", p.getProperty("mini_appsecret"));
+            url = url.replaceAll("JSCODE", code);
+            jsonText = SSLUtils.httpsGet(new URI(url));
+            return new ObjectMapper().readValue(jsonText, WxAppletLoginInfo.class);
+        } catch (URISyntaxException | IOException e) {
+            log.error("登录小程序失败：" + jsonText, e);
+            return jsonText;
+        }
     }
 
 

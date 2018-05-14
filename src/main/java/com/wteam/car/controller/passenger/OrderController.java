@@ -4,8 +4,8 @@ import com.apidoc.annotation.*;
 import com.apidoc.enumeration.DataType;
 import com.apidoc.enumeration.Method;
 import com.apidoc.enumeration.ParamType;
-import com.wteam.car.bean.Msg;
-import com.wteam.car.bean.PageInfo;
+import com.wteam.car.bean.interact.response.Msg;
+import com.wteam.car.bean.interact.request.PageInfo;
 import com.wteam.car.bean.entity.Order;
 import com.wteam.car.bean.entity.User;
 import com.wteam.car.service.OrderService;
@@ -41,15 +41,15 @@ public class OrderController {
     @ApiReqParams(
             type = ParamType.JSON,
             value = {
-                    @ApiParam(name = "passenger", defaultValue = "123", required = true, dataType = DataType.OBJECT, object = "passenger", description = "乘客信息"),
-                    @ApiParam(name = "trueName", defaultValue = "123", required = true, description = "姓名", belongTo = "passenger"),
-                    @ApiParam(name = "phoneNumber", defaultValue = "123", required = true, description = "电话", belongTo = "passenger"),
-                    @ApiParam(name = "departure", defaultValue = "123", required = true, description = "出发地"),
-                    @ApiParam(name = "destination", defaultValue = "123", required = true, description = "目的地"),
-                    @ApiParam(name = "price", defaultValue = "123", required = true, dataType = DataType.NUMBER, description = "价格"),
-                    @ApiParam(name = "appointmentTime", defaultValue = "1529679818948", dataType = DataType.DATE, required = true, description = "预约上车时间点，unix时间戳。单位：milliseconds"),
-                    @ApiParam(name = "validTime", defaultValue = "123", required = true, dataType = DataType.NUMBER, description = "从预约上车时间点开始该订单有效时长。单位：秒"),
-                    @ApiParam(name = "ps", defaultValue = "123", description = "备注"),
+                    @ApiParam(name = "passenger",  required = true, dataType = DataType.OBJECT, object = "passenger", description = "乘客信息"),
+                    @ApiParam(name = "trueName",  required = true, description = "姓名", belongTo = "passenger"),
+                    @ApiParam(name = "phoneNumber",  required = true, description = "电话", belongTo = "passenger"),
+                    @ApiParam(name = "departure",  required = true, description = "出发地"),
+                    @ApiParam(name = "destination",  required = true, description = "目的地"),
+                    @ApiParam(name = "price",  required = true, dataType = DataType.NUMBER, description = "价格"),
+                    @ApiParam(name = "appointmentTime",  dataType = DataType.DATE, required = true, description = "预约上车时间点，unix时间戳。单位：milliseconds"),
+                    @ApiParam(name = "validTime",  required = true, dataType = DataType.NUMBER, description = "从预约上车时间点开始该订单有效时长。单位：秒"),
+                    @ApiParam(name = "ps",  description = "备注"),
             })
     @ApiRespParams({
             @ApiParam(name = "code", description = "1操作成功，0操作失败", dataType = DataType.NUMBER),
@@ -59,7 +59,7 @@ public class OrderController {
     })
     @PostMapping("add")
     public Msg add(@RequestBody @Validated(OrderGroup.PassengerOrder.add.class) Order order
-            , @SessionAttribute(name = "user", required = false) User passenger) {
+            , @SessionAttribute(name = "user") User passenger) {
         //防止乘客恶意刷单
         if (orderService.unCompleteCount(passenger) >= 5) {
             return Msg.failed("操作失败，你还有5个订单未完成，请待完成或取消后再试");
@@ -89,20 +89,26 @@ public class OrderController {
     @ApiReqParams(
             type = ParamType.JSON,
             value = {
-                    @ApiParam(name = "id", defaultValue = "123", required = true, description = "订单编号id"),
+                    @ApiParam(name = "id",  required = true, description = "订单编号id"),
             })
+    @ApiRespParams({
+            @ApiParam(name = "code", description = "1操作成功，0操作失败", dataType = DataType.NUMBER),
+            @ApiParam(name = "msg", description = "错误或成功消息"),
+            @ApiParam(name = "data", description = "成功或错误信息数据", dataType = DataType.OBJECT),
+            @ApiParam(name = "debugMsg", description = "调试信息，仅供开发调试时参考，不用理他"),
+    })
     @PostMapping("cancel")
     public Msg cancel(@RequestBody @Validated(OrderGroup.id.class) Order orderId,
-                      @SessionAttribute(name = "user", required = false) User passenger) {
+                      @SessionAttribute(name = "user") User passenger) {
         //是否存在
         Optional<Order> orderOptional = orderService.findById(orderId.getId());
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
-            if (!order.getPassenger().getOpenid().equals(passenger.getOpenid())) {
-                return Msg.failedData("id", "该订单不属于改乘客");
+            if (!order.getPassenger().getUnionId().equals(passenger.getUnionId())) {
+                return Msg.failedDataMsg("id", "该订单不属于改乘客");
             }
             if (order.getStatus() != 0) {
-                return Msg.failedData("id", "订单状态有误，不能取消");
+                return Msg.failedDataMsg("id", "订单状态有误，不能取消");
             }
             order.setCancelTime(new Timestamp(System.currentTimeMillis()));
             order.setStatus(3);
@@ -110,7 +116,7 @@ public class OrderController {
             return Msg.success("操作成功");
 
         } else {
-            return Msg.failedData("id", "该订单不存在");
+            return Msg.failedDataMsg("id", "该订单不存在");
         }
     }
 
@@ -120,20 +126,26 @@ public class OrderController {
     @ApiReqParams(
             type = ParamType.JSON,
             value = {
-                    @ApiParam(name = "id", defaultValue = "123", required = true, description = "订单编号id"),
+                    @ApiParam(name = "id",  required = true, description = "订单编号id"),
             })
+    @ApiRespParams({
+            @ApiParam(name = "code", description = "1操作成功，0操作失败", dataType = DataType.NUMBER),
+            @ApiParam(name = "msg", description = "错误或成功消息"),
+            @ApiParam(name = "data", description = "成功或错误信息数据", dataType = DataType.OBJECT),
+            @ApiParam(name = "debugMsg", description = "调试信息，仅供开发调试时参考，不用理他"),
+    })
     @PostMapping("complete")
     public Msg complete(@RequestBody @Validated(OrderGroup.id.class) Order orderId,
-                        @SessionAttribute(name = "user", required = false) User passenger) {
+                        @SessionAttribute(name = "user") User passenger) {
         //是否存在
         Optional<Order> orderOptional = orderService.findById(orderId.getId());
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
-            if (!order.getPassenger().getOpenid().equals(passenger.getOpenid())) {
-                return Msg.failedData("id", "该订单不属于该乘客");
+            if (!order.getPassenger().getUnionId().equals(passenger.getUnionId())) {
+                return Msg.failedDataMsg("id", "该订单不属于该乘客");
             }
             if (order.getStatus() != 1) {
-                return Msg.failedData("id", "订单状态有误，不能完成");
+                return Msg.failedDataMsg("id", "订单状态有误，不能完成");
             }
             order.setCompleteTime(new Timestamp(System.currentTimeMillis()));
             order.setStatus(2);
@@ -141,7 +153,7 @@ public class OrderController {
             return Msg.success("操作成功");
 
         } else {
-            return Msg.failedData("id", "该订单不存在");
+            return Msg.failedDataMsg("id", "该订单不存在");
         }
     }
 
@@ -150,20 +162,26 @@ public class OrderController {
     @ApiReqParams(
             type = ParamType.JSON,
             value = {
-                    @ApiParam(name = "id", defaultValue = "123", required = true, description = "订单编号id"),
+                    @ApiParam(name = "id",  required = true, description = "订单编号id"),
             })
+    @ApiRespParams({
+            @ApiParam(name = "code", description = "1操作成功，0操作失败", dataType = DataType.NUMBER),
+            @ApiParam(name = "msg", description = "错误或成功消息"),
+            @ApiParam(name = "data", description = "成功或错误信息数据", dataType = DataType.OBJECT),
+            @ApiParam(name = "debugMsg", description = "调试信息，仅供开发调试时参考，不用理他"),
+    })
     @PostMapping("reset")
     public Msg reset(@RequestBody @Validated(OrderGroup.id.class) Order orderId,
-                     @SessionAttribute(name = "user", required = false) User passenger) {
+                     @SessionAttribute(name = "user") User passenger) {
         //是否存在
         Optional<Order> orderOptional = orderService.findById(orderId.getId());
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
-            if (!order.getPassenger().getOpenid().equals(passenger.getOpenid())) {
-                return Msg.failedData("id", "该订单不属于该乘客");
+            if (!order.getPassenger().getUnionId().equals(passenger.getUnionId())) {
+                return Msg.failedDataMsg("id", "该订单不属于该乘客");
             }
             if (order.getStatus() != 1) {
-                return Msg.failedData("id", "订单状态有误，不能重置");
+                return Msg.failedDataMsg("id", "订单状态有误，不能重置");
             }
             //改变旧订单状态
             order.setStatus(5);
@@ -178,19 +196,28 @@ public class OrderController {
             return Msg.success("操作成功");
 
         } else {
-            return Msg.failedData("id", "该订单不存在");
+            return Msg.failedDataMsg("id", "该订单不存在");
         }
     }
 
 
     //获取我的订单列表
-    @PostMapping("getOrders")
+    @ApiAction(name = "获取我的订单列表", mapping = "getMyOrders", method = Method.POST)
+    @PostMapping("getMyOrders")
     @ResponseBody
-    @ApiReqParams({
-            @ApiParam(name = "pageSize", defaultValue = "10", dataType = DataType.NUMBER, description = "每页条目数"),
-            @ApiParam(name = "currPage", defaultValue = "1", dataType = DataType.NUMBER, description = "当前页，即要获取的页")
+    @ApiReqParams(
+            value = {
+                    @ApiParam(name = "pageSize", defaultValue = "10", dataType = DataType.NUMBER, description = "每页条目数"),
+                    @ApiParam(name = "currPage", defaultValue = "1", dataType = DataType.NUMBER, description = "当前页，即要获取的页")
+            }, type = ParamType.JSON
+    )
+    @ApiRespParams({
+            @ApiParam(name = "code", description = "1操作成功，0操作失败", dataType = DataType.NUMBER),
+            @ApiParam(name = "msg", description = "错误或成功消息"),
+            @ApiParam(name = "data", description = "成功或错误信息数据", dataType = DataType.OBJECT),
+            @ApiParam(name = "debugMsg", description = "调试信息，仅供开发调试时参考，不用理他"),
     })
-    public Msg getOrders(@RequestBody PageInfo pageInfo, @SessionAttribute(name = "user", required = false) User passenger) {
-        return Msg.successData(orderService.getOrderPagesOrderByCreateTime(passenger, pageInfo));
+    public Msg getOrders(@RequestBody PageInfo pageInfo, @SessionAttribute(name = "user") User passenger) {
+        return Msg.successData(orderService.findPassengerOrders(passenger, pageInfo));
     }
 }

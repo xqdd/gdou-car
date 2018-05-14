@@ -1,7 +1,7 @@
 package com.wteam.car.web.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wteam.car.bean.Msg;
+import com.wteam.car.bean.interact.response.Msg;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
 import org.springframework.stereotype.Component;

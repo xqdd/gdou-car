@@ -1,17 +1,19 @@
 package com.wteam.car.web.exception;
 
-import com.wteam.car.bean.Msg;
+import com.wteam.car.bean.interact.response.Msg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +36,12 @@ public class MyExceptionHandlers {
         return Msg.failed(errors);
     }
 
+
+    //没session
+    @ExceptionHandler({ServletRequestBindingException.class})
+    public Object sessionMiss(ServletRequestBindingException e, HttpServletRequest request) {
+        return Msg.failedAndDebug("请先登录", e.getMessage());
+    }
 
     //数字格式化错误
     @ExceptionHandler(NumberFormatException.class)

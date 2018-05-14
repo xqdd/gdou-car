@@ -13,18 +13,22 @@ public class User {
 
 
     @Id
-    private String openid;
+    @NotEmpty(groups = {OrderGroup.miniAppSaveUser.class})
+    private String unionId;
 
+    @NotEmpty(groups = {OrderGroup.miniAppSaveUser.class})
     private String nickName;
-
-    @NotEmpty(groups = {OrderGroup.PassengerOrder.add.class})
+    @NotEmpty(groups = {OrderGroup.PassengerOrder.add.class,OrderGroup.DriverOrder.takeOrder.class})
     private String trueName;
 
-    @NotEmpty(groups = {OrderGroup.PassengerOrder.add.class})
+    @NotEmpty(groups = {OrderGroup.PassengerOrder.add.class,OrderGroup.DriverOrder.takeOrder.class})
     private String phoneNumber;
 
+    @NotEmpty(groups = {OrderGroup.miniAppSaveUser.class})
     private String headimgurl;
 
+    @NotEmpty(groups = {OrderGroup.DriverOrder.takeOrder.class})
+    //用户的性别，值为1时是男性，值为2时是女性，值为0时是未知
     private String sex;
 
 
@@ -54,12 +58,12 @@ public class User {
         this.driverOrders = driverOrders;
     }
 
-    public String getOpenid() {
-        return openid;
+    public String getUnionId() {
+        return unionId;
     }
 
-    public void setOpenid(String openid) {
-        this.openid = openid;
+    public void setUnionId(String unionId) {
+        this.unionId = unionId;
     }
 
     public String getNickName() {
@@ -105,8 +109,8 @@ public class User {
     public User() {
     }
 
-    public User(String openid, String sex) {
-        this.openid = openid;
+    public User(String unionId, String sex) {
+        this.unionId = unionId;
         this.sex = sex;
     }
 }

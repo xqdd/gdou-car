@@ -22,16 +22,18 @@ public class MyWebAppConfigurer implements WebMvcConfigurer {
 
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(this.crossDomainInterceptor).addPathPatterns("/**");
-//        registry.addInterceptor(this.userInterceptor)
-//                .addPathPatterns("/**")
-//                .excludePathPatterns("/wxWeb/**")
-//                .excludePathPatterns("/apidocs/**")
-//                .excludePathPatterns("/**/*.html")
-//                .excludePathPatterns("/**/*.css")
-//                .excludePathPatterns("/**/*.js")
-//                .excludePathPatterns("/**/*.jpg")
-//                .excludePathPatterns("/**/*.png")
-//                .excludePathPatterns("/**/*.gif");
+        registry.addInterceptor(this.userInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/wxWeb/**")
+                .excludePathPatterns("/wxMiniApp/**")
+                .excludePathPatterns("/apidoc/**")
+                .excludePathPatterns("/**/*.txt")
+                .excludePathPatterns("/**/*.html")
+                .excludePathPatterns("/**/*.css")
+                .excludePathPatterns("/**/*.js")
+                .excludePathPatterns("/**/*.jpg")
+                .excludePathPatterns("/**/*.png")
+                .excludePathPatterns("/**/*.gif");
 
     }
 }

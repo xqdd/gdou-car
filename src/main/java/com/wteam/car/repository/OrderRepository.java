@@ -16,4 +16,8 @@ public interface OrderRepository extends BaseRepository<Order, String> {
 
     List<Order> findAllByPassengerOrderByCreateTime(User passenger, Pageable pageable);
 
+    List<Order> findAllByStatusOrderByCreateTime(Integer status, Pageable pageable);
+
+    List<Order> findAllByDriverOrderByCreateTime(User driver, Pageable pageable);
+
 }

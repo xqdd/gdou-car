@@ -20,7 +20,7 @@ public class Order {
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     @GeneratedValue(generator = "uuid")
-    @NotEmpty(groups = {OrderGroup.id.class})
+    @NotEmpty(groups = {OrderGroup.id.class, OrderGroup.DriverOrder.takeOrder.class})
     private String id;
 
     //级联更新：指A类新增或者变化，会级联B对象（新增或者变化）
@@ -30,6 +30,8 @@ public class Order {
     private User passenger;
 
     @ManyToOne
+    @Valid
+    @NotNull(groups = {OrderGroup.DriverOrder.takeOrder.class})
     private User driver;
 
     //出发地
@@ -172,6 +174,7 @@ public class Order {
     public Integer getStatus() {
         return status;
     }
+
     //状态,0等待接单，1被接单，2订单完成，3订单取消，4订单超时，5订单已重置
     public void setStatus(Integer status) {
         this.status = status;

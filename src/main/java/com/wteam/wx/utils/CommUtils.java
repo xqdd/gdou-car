@@ -1,4 +1,4 @@
-package com.wteam.car.utils;
+package com.wteam.wx.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.List;

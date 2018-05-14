@@ -1,38 +1,43 @@
 package com.wteam.wx.utils;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wteam.wx.bean.AccessToken;
-import com.wteam.wx.bean.TemplateMsg;
-import org.apache.http.entity.StringEntity;
+import com.wteam.wx.bean.WxAppletEncryption;
+import com.wteam.wx.bean.WxAppletLoginInfo;
+import com.wteam.wx.bean.WxAppletUserInfo;
+import jodd.util.Base64;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.AlgorithmParameters;
+import java.security.Security;
+import java.util.Arrays;
 import java.util.Properties;
 
 public class WxUtils {
 
+    private static final Logger log = LoggerFactory.getLogger(WxUtils.class);
 
     /**
      * 获取access_token
      *
      * @return
      */
-    private static AccessToken fetchAccessToken() {
+    public static AccessToken fetchAccessToken() {
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
         Properties p = new Properties();
         try {
-            p.load(WxUtils.class.getClassLoader().getResourceAsStream("wx.properties"));
-
+            p.load(TemplateUtils.class.getClassLoader().getResourceAsStream("wx.properties"));
 
             url = url.replaceAll("APPID", p.getProperty("appid"));
             url = url.replaceAll("APPSECRET", p.getProperty("appsecret"));
-
 
             String jsonText = SSLUtils.httpsGet(new URI(url));
             System.out.println(jsonText);
@@ -44,93 +49,41 @@ public class WxUtils {
     }
 
 
-    /**
-     * 设置模板行业信息
-     *
-     * @param access_token
-     * @return
-     */
-    public static String setIndustry(String access_token) {
-        String url = "https://api.weixin.qq.com/cgi-bin/template/api_set_industry?access_token=ACCESS_TOKEN";
+    public static WxAppletUserInfo decryptData(WxAppletEncryption encryption, WxAppletLoginInfo loginInfo) {
+        //加密密匙
+        byte[] keyByte = Base64.decode(loginInfo.getSession_key());
+        //偏移量
+        byte[] ivByte = Base64.decode(encryption.getIv());
+        //被加密的数据
+        byte[] dataByte = Base64.decode(encryption.getEncryptedData());
+
         try {
-
-            url = url.replaceAll("ACCESS_TOKEN", access_token);
-
-
-            JSONObject params = new JSONObject();
-
-            params.put("industry_id1", "16");
-            params.put("industry_id2", "38");
-
-            System.out.println(params.toJSONString());
-
-
-            String jsonText = SSLUtils.httpsPost(new URI(url), new StringEntity(params.toString(), "utf-8"));
-            System.out.println(jsonText);
-            return jsonText;
-        } catch (URISyntaxException e) {
-            return null;
-        }
-    }
-
-
-    /**
-     * 获取模板行业信息
-     *
-     * @param access_token
-     * @return
-     */
-    public static String getIndustry(String access_token) {
-        String url = "https://api.weixin.qq.com/cgi-bin/template/get_industry?access_token=ACCESS_TOKEN";
-        try {
-            url = url.replaceAll("ACCESS_TOKEN", access_token);
-            String jsonText = SSLUtils.httpsGet(new URI(url));
-            System.out.println(jsonText);
-            return jsonText;
-        } catch (URISyntaxException e) {
-            return null;
-        }
-    }
-
-    //发送模板消息
-    public static String sendTemplateMsg(String access_token, TemplateMsg templateMsg) {
-
-        String url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=ACCESS_TOKEN";
-        try {
-            url = url.replaceAll("ACCESS_TOKEN", access_token);
-            String jsonText = SSLUtils.httpsPost(new URI(url), new StringEntity(JSON.toJSONString(templateMsg), "utf-8"));
-            System.out.println(jsonText);
-            return jsonText;
-        } catch (URISyntaxException e) {
-            return null;
-        }
-    }
-
-
-    //获取access_token
-    public static String getAccessToken() {
-        Properties p = new Properties();
-        try {
-            File file = new File(WxUtils.class.getClassLoader().getResource("").getFile() + "runtime.properties");
-            if (file.exists()) {
-                p.load(new FileInputStream(file));
-                if ((System.currentTimeMillis() - Long.parseLong(p.getProperty("fetch_time"))) / 1000
-                        < Long.parseLong(p.getProperty("expires_in")) - 200)
-                    return p.getProperty("access_token");
+            // 如果密钥不足16位，那么就补足.  这个if 中的内容很重要
+            int base = 16;
+            if (keyByte.length % base != 0) {
+                int groups = keyByte.length / base + (keyByte.length % base != 0 ? 1 : 0);
+                byte[] temp = new byte[groups * base];
+                Arrays.fill(temp, (byte) 0);
+                System.arraycopy(keyByte, 0, temp, 0, keyByte.length);
+                keyByte = temp;
             }
-            AccessToken token = fetchAccessToken();
-            if (token != null) {
-                p.setProperty("access_token", token.getAccess_token());
-                p.setProperty("expires_in", token.getExpires_in());
-                p.setProperty("fetch_time", System.currentTimeMillis() + "");
-                p.store(new FileOutputStream(file), "runtime.properties");
-
-                return token.getAccess_token();
+            // 初始化
+            Security.addProvider(new BouncyCastleProvider());
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding", "BC");
+            SecretKeySpec spec = new SecretKeySpec(keyByte, "AES");
+            AlgorithmParameters parameters = AlgorithmParameters.getInstance("AES");
+            parameters.init(new IvParameterSpec(ivByte));
+            cipher.init(Cipher.DECRYPT_MODE, spec, parameters);// 初始化
+            byte[] resultByte = cipher.doFinal(dataByte);
+            if (null != resultByte && resultByte.length > 0) {
+                return new ObjectMapper().readValue(new String(resultByte, "UTF-8"), WxAppletUserInfo.class);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            log.warn("解密出的小程序用户信息为空");
+            return null;
+        } catch (Exception e) {
+            log.error("解密小程序用户信息失败", e);
+            return null;
         }
-        return null;
     }
 
 }

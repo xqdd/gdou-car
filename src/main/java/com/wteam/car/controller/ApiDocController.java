@@ -46,7 +46,7 @@ public class ApiDocController {
                         new ApiDocInfo()
                                 .setTitle("海大约车")
                                 .setVersion("1.0")
-                                .setDescription("测试描述")
+//                                .setDescription("测试描述")
                 )
                 .generator("com.wteam");//指定生成哪个包下controller的文档
     }

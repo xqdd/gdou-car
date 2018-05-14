@@ -1,4 +1,4 @@
-package com.wteam.car.bean;
+package com.wteam.car.bean.interact.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -107,18 +107,16 @@ public class Msg {
     }
 
 
-    public static Msg successData(String... data) {
+    public static Msg successDataMsg(String... data) {
         return new Msg(CODE_SUCCESS, data2Map(data));
     }
 
 
-    public static Msg failedData(String... data) {
+    public static Msg failedDataMsg(String... data) {
         return new Msg(CODE_FAILED, data2Map(data));
     }
 
-    public static Msg successDataMsg(String msg) {
-        return Msg.successData("msg", msg);
-    }
+
 
     public static Msg successData(Object data) {
         return new Msg(CODE_SUCCESS, data);

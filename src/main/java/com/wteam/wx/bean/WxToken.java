@@ -7,6 +7,7 @@ public class WxToken {
     private String openid;
     private String expires_in;
     private String scope;
+    private String unionid;
 
     public String getAccess_token() {
         return access_token;
@@ -46,6 +47,15 @@ public class WxToken {
 
     public void setScope(String scope) {
         this.scope = scope;
+    }
+
+
+    public String getUnionid() {
+        return unionid;
+    }
+
+    public void setUnionid(String unionid) {
+        this.unionid = unionid;
     }
 
     @Override
