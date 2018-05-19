@@ -26,13 +26,13 @@ import java.util.Optional;
 @Controller("passengerOrder")
 @RequestMapping("passengerOrder/")
 @Api(name = "乘客订单接口", mapping = "/passengerOrder/")
-public class OrderController {
+public class PassengerOrderController {
 
     private final OrderService orderService;
 
 
     @Autowired
-    public OrderController(OrderService orderService) {
+    public PassengerOrderController(OrderService orderService) {
         this.orderService = orderService;
     }
 

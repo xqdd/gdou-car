@@ -12,7 +12,6 @@ import com.wteam.wx.bean.*;
 import com.wteam.wx.utils.Oauth2Utils;
 import com.wteam.wx.utils.WxUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -23,8 +22,9 @@ import java.util.Optional;
 import java.util.Properties;
 
 
-@Controller
+@RestController
 @Api(name = "微信相关接口")
+@RequestMapping(produces = "application/json; charset=utf-8")
 public class WxController extends BaseController {
 
 
@@ -38,8 +38,9 @@ public class WxController extends BaseController {
 
     //微信网页登录
     @GetMapping(value = "wxWeb/login")
-    @ResponseBody
     public Msg login(String code, String state, HttpSession session, HttpServletResponse response) {
+
+        System.out.println("wxWeb/login：" + session.getId());
         if (code == null || code.trim().isEmpty()) {
             return Msg.failed("参数有误");
         }
@@ -96,9 +97,24 @@ public class WxController extends BaseController {
             @ApiParam(name = "code", defaultValue = "1"),
             @ApiParam(name = "data"),
     })
-    @ResponseBody
     public Msg getWebLoginUrl(String callbackUrl) {
         return Msg.successData(Oauth2Utils.generateUrl(callbackUrl));
+    }
+
+
+    @GetMapping(value = "wxWeb/isLogined")
+    @ApiAction(name = "检查是否已经登录", mapping = "wxWeb/isLogined")
+    @ApiRespParams({
+            @ApiParam(name = "code", description = "1（是）/0（否）"),
+    })
+    public Msg isLogined(HttpSession session) {
+        System.out.println("wxWeb/isLogined：" + session.getId());
+
+        if (session.getAttribute("user") == null) {
+            return Msg.failed();
+        } else {
+            return Msg.success();
+        }
     }
 
 
@@ -109,7 +125,6 @@ public class WxController extends BaseController {
             @ApiParam(name = "code", description = "1或0"),
             @ApiParam(name = "data", description = "登录成功或登录失败"),
     })
-    @ResponseBody
     public Msg miniAppLogin(String code, HttpSession session) {
         if (StringUtils.isNullOrEmpty(code)) {
             return Msg.failed("code不能为空");
@@ -134,7 +149,6 @@ public class WxController extends BaseController {
             @ApiParam(name = "code", description = "1或0"),
             @ApiParam(name = "data", description = "操作成功或操作失败"),
     })
-    @ResponseBody
     public Msg miniAppSaveUser(@RequestBody @Valid WxAppletEncryption encryption,
                                @SessionAttribute("miniAppLoginInfo") WxAppletLoginInfo loginInfo) {
 
@@ -156,6 +170,21 @@ public class WxController extends BaseController {
         saveUser.setNickName(userInfo.getNickName());
         userService.save(saveUser);
         return Msg.success("操作成功");
+    }
+
+
+    @ApiAction(name = "登录测试接口", mapping = "wxWeb/userLogin")
+    @GetMapping("wxWeb/userLogin")
+    @ApiRespParams
+    public Msg userLogin(HttpSession session) {
+        Optional<User> optionalUser = userService.findById("oeskB1h-1hWC7LCwVGBwjvfHJ1Nk");
+        if (optionalUser.isPresent()) {
+            session.setAttribute("user", optionalUser.get());
+            return Msg.success();
+        } else {
+            return Msg.failed();
+        }
+
     }
 
 

@@ -224,6 +224,8 @@ public class GeneratorApiDoc {
             apiDocReqParams.setType(apiReqParams.type().toString());
             //设置请求参数列表
             apiDocReqParams.setParams(getApiParam(apiReqParams.value()));
+            //设置描述
+            apiDocReqParams.setDescription(apiReqParams.description());
         }
         return apiDocReqParams;
     }
@@ -240,6 +242,8 @@ public class GeneratorApiDoc {
         if (null != apiRespParams) {
             apiDocRespParams = new ApiDocRespParams();
             List<ApiDocParam> apiDocRespParamList = getApiParam(apiRespParams.value());
+            //设置描述
+            apiDocRespParams.setDescription(apiRespParams.description());
             apiDocRespParams.setParams(apiDocRespParamList);
         }
         return apiDocRespParams;

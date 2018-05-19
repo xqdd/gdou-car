@@ -26,12 +26,12 @@ import java.util.Optional;
 @Controller("driverOrder")
 @RequestMapping("driverOrder/")
 @Api(name = "司机订单接口", mapping = "/driverOrder/")
-public class OrderController {
+public class DriverOrderController {
 
     private final OrderService orderService;
 
     @Autowired
-    public OrderController(OrderService orderService) {
+    public DriverOrderController(OrderService orderService) {
         this.orderService = orderService;
     }
 
