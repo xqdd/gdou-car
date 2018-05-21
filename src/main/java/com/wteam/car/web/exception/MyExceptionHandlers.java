@@ -33,6 +33,7 @@ public class MyExceptionHandlers {
         }
         Map<String, String> errors = new HashMap<>();
         result.getFieldErrors().forEach((fe) -> errors.put(fe.getField(), fe.getDefaultMessage()));
+//        errors.put("currTime", String.valueOf(System.currentTimeMillis()));
         return Msg.failed(errors);
     }
 
@@ -40,7 +41,7 @@ public class MyExceptionHandlers {
     //没session
     @ExceptionHandler({ServletRequestBindingException.class})
     public Object sessionMiss(ServletRequestBindingException e, HttpServletRequest request) {
-        return Msg.failedAndDebug("请先登录", e.getMessage());
+        return Msg.authorityAndDebug("请先登录", e.getMessage());
     }
 
     //数字格式化错误

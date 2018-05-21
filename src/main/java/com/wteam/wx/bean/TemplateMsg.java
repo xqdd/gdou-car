@@ -53,12 +53,14 @@ public class TemplateMsg {
 
 
 
-    public class Data{
+    public static class Data{
         private DataValue first;
         private DataValue keyword1;
         private DataValue keyword2;
         private DataValue keyword3;
         private DataValue keyword4;
+        private DataValue keyword5;
+        private DataValue keyword6;
         private DataValue remark;
 
         public DataValue getFirst() {
@@ -109,6 +111,21 @@ public class TemplateMsg {
             this.remark = remark;
         }
 
+        public DataValue getKeyword5() {
+            return keyword5;
+        }
+
+        public void setKeyword5(DataValue keyword5) {
+            this.keyword5 = keyword5;
+        }
+
+        public DataValue getKeyword6() {
+            return keyword6;
+        }
+
+        public void setKeyword6(DataValue keyword6) {
+            this.keyword6 = keyword6;
+        }
 
         public Data() {
         }
@@ -119,6 +136,28 @@ public class TemplateMsg {
             this.keyword2 = keyword2;
             this.keyword3 = keyword3;
             this.keyword4 = keyword4;
+            this.remark = remark;
+        }
+
+        public Data(DataValue first, DataValue keyword1, DataValue keyword2, DataValue keyword3, DataValue keyword4, DataValue keyword5, DataValue remark) {
+            this.first = first;
+            this.keyword1 = keyword1;
+            this.keyword2 = keyword2;
+            this.keyword3 = keyword3;
+            this.keyword4 = keyword4;
+            this.keyword5 = keyword5;
+            this.remark = remark;
+        }
+
+
+        public Data(DataValue first, DataValue keyword1, DataValue keyword2, DataValue keyword3, DataValue keyword4, DataValue keyword5, DataValue keyword6, DataValue remark) {
+            this.first = first;
+            this.keyword1 = keyword1;
+            this.keyword2 = keyword2;
+            this.keyword3 = keyword3;
+            this.keyword4 = keyword4;
+            this.keyword5 = keyword5;
+            this.keyword6 = keyword6;
             this.remark = remark;
         }
 
@@ -135,7 +174,7 @@ public class TemplateMsg {
         }
     }
 
-    public class DataValue{
+    public static class DataValue{
         private String value;
         private String color;
 

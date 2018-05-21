@@ -19,7 +19,7 @@ public class CommInterceptor extends HandlerInterceptorAdapter {
             long maxSize = 20 * 1024 * 1024;
             if (new ServletRequestContext(request).contentLength() > maxSize) {
                 response.setContentType("application/json; charset=utf-8");
-                response.getWriter().print((new ObjectMapper()).writeValueAsString(Msg.failed("请先登录")));
+                response.getWriter().print((new ObjectMapper()).writeValueAsString(Msg.authority("请先登录")));
                 return false;
             }
         }

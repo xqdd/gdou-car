@@ -14,10 +14,12 @@ public interface OrderRepository extends BaseRepository<Order, String> {
 
     long countByPassengerAndStatus(User passenger, Integer status);
 
-    List<Order> findAllByPassengerOrderByCreateTime(User passenger, Pageable pageable);
+    long countByDriverAndStatus(User driver, Integer status);
 
-    List<Order> findAllByStatusOrderByCreateTime(Integer status, Pageable pageable);
+    List<Order> findAllByPassengerOrderByCreateTimeDesc(User passenger, Pageable pageable);
 
-    List<Order> findAllByDriverOrderByCreateTime(User driver, Pageable pageable);
+    List<Order> findAllByStatusOrderByCreateTimeDesc(Integer status, Pageable pageable);
+
+    List<Order> findAllByDriverOrderByCreateTimeDesc(User driver, Pageable pageable);
 
 }

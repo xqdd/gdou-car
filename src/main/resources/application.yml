@@ -22,7 +22,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     database: mysql
     properties:
       hinbernate:
@@ -49,9 +49,9 @@ logging:
   level:
     org:
       hibernate:
-        SQL: debug
+        SQL: error
     com:
-      xqdd: debug
+      xqdd: error
 #    root: debug
   path: runtime/logs/
 

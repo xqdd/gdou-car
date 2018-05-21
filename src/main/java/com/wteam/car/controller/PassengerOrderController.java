@@ -1,19 +1,19 @@
-package com.wteam.car.controller.passenger;
+package com.wteam.car.controller;
 
 import com.apidoc.annotation.*;
 import com.apidoc.enumeration.DataType;
 import com.apidoc.enumeration.Method;
 import com.apidoc.enumeration.ParamType;
-import com.wteam.car.bean.interact.response.Msg;
-import com.wteam.car.bean.interact.request.PageInfo;
 import com.wteam.car.bean.entity.Order;
 import com.wteam.car.bean.entity.User;
+import com.wteam.car.bean.interact.request.PageInfo;
+import com.wteam.car.bean.interact.response.Msg;
 import com.wteam.car.service.OrderService;
+import com.wteam.car.service.UserService;
 import com.wteam.car.utils.jsonview.OrderGroup;
 import com.wteam.delay_queue.OrderJob;
 import com.wteam.delay_queue.OrderJobQueue;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,17 +23,19 @@ import java.util.Optional;
 /**
  * 乘客订单接口
  */
-@Controller("passengerOrder")
-@RequestMapping("passengerOrder/")
-@Api(name = "乘客订单接口", mapping = "/passengerOrder/")
+@RestController("passengerOrder")
+@RequestMapping(value = "passengerOrder", produces = "application/json; charset=utf-8")
+@Api(name = "乘客订单接口", mapping = "passengerOrder/")
 public class PassengerOrderController {
 
     private final OrderService orderService;
 
+    private final UserService userService;
 
     @Autowired
-    public PassengerOrderController(OrderService orderService) {
+    public PassengerOrderController(OrderService orderService, UserService userService) {
         this.orderService = orderService;
+        this.userService = userService;
     }
 
 
@@ -41,15 +43,15 @@ public class PassengerOrderController {
     @ApiReqParams(
             type = ParamType.JSON,
             value = {
-                    @ApiParam(name = "passenger",  required = true, dataType = DataType.OBJECT, object = "passenger", description = "乘客信息"),
-                    @ApiParam(name = "trueName",  required = true, description = "姓名", belongTo = "passenger"),
-                    @ApiParam(name = "phoneNumber",  required = true, description = "电话", belongTo = "passenger"),
-                    @ApiParam(name = "departure",  required = true, description = "出发地"),
-                    @ApiParam(name = "destination",  required = true, description = "目的地"),
-                    @ApiParam(name = "price",  required = true, dataType = DataType.NUMBER, description = "价格"),
-                    @ApiParam(name = "appointmentTime",  dataType = DataType.DATE, required = true, description = "预约上车时间点，unix时间戳。单位：milliseconds"),
-                    @ApiParam(name = "validTime",  required = true, dataType = DataType.NUMBER, description = "从预约上车时间点开始该订单有效时长。单位：秒"),
-                    @ApiParam(name = "ps",  description = "备注"),
+                    @ApiParam(name = "passenger", required = true, dataType = DataType.OBJECT, object = "passenger", description = "乘客信息"),
+                    @ApiParam(name = "trueName", required = true, description = "姓名", belongTo = "passenger"),
+                    @ApiParam(name = "phoneNumber", required = true, description = "电话", belongTo = "passenger"),
+                    @ApiParam(name = "departure", required = true, description = "出发地"),
+                    @ApiParam(name = "destination", required = true, description = "目的地"),
+                    @ApiParam(name = "price", required = true, dataType = DataType.NUMBER, description = "价格"),
+                    @ApiParam(name = "appointmentTime", dataType = DataType.DATE, required = true, description = "预约上车时间点，unix时间戳。单位：milliseconds"),
+                    @ApiParam(name = "validTime", required = true, dataType = DataType.NUMBER, description = "从预约上车时间点开始该订单有效时长。单位：秒"),
+                    @ApiParam(name = "ps", description = "备注"),
             })
     @ApiRespParams({
             @ApiParam(name = "code", description = "1操作成功，0操作失败", dataType = DataType.NUMBER),
@@ -61,18 +63,19 @@ public class PassengerOrderController {
     public Msg add(@RequestBody @Validated(OrderGroup.PassengerOrder.add.class) Order order
             , @SessionAttribute(name = "user") User passenger) {
         //防止乘客恶意刷单
-        if (orderService.unCompleteCount(passenger) >= 5) {
-            return Msg.failed("操作失败，你还有5个订单未完成，请待完成或取消后再试");
+        if (orderService.passengerUnCompleteCount(passenger) >= 1) {
+            return Msg.failed("操作失败，您之前的订单尚未完成，请待完成或取消后再试");
         }
         passenger.setTrueName(order.getPassenger().getTrueName());
         passenger.setPhoneNumber(order.getPassenger().getPhoneNumber());
         order.setPassenger(passenger);
         order.setStatus(0);
         order.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        userService.save(passenger);
         orderService.save(order);
         //超时处理
         handleOrderTimeOut(order);
-        return Msg.successData("添加成功");
+        return Msg.success("添加成功");
     }
 
 
@@ -89,7 +92,7 @@ public class PassengerOrderController {
     @ApiReqParams(
             type = ParamType.JSON,
             value = {
-                    @ApiParam(name = "id",  required = true, description = "订单编号id"),
+                    @ApiParam(name = "id", required = true, description = "订单编号id"),
             })
     @ApiRespParams({
             @ApiParam(name = "code", description = "1操作成功，0操作失败", dataType = DataType.NUMBER),
@@ -126,7 +129,7 @@ public class PassengerOrderController {
     @ApiReqParams(
             type = ParamType.JSON,
             value = {
-                    @ApiParam(name = "id",  required = true, description = "订单编号id"),
+                    @ApiParam(name = "id", required = true, description = "订单编号id"),
             })
     @ApiRespParams({
             @ApiParam(name = "code", description = "1操作成功，0操作失败", dataType = DataType.NUMBER),
@@ -162,7 +165,7 @@ public class PassengerOrderController {
     @ApiReqParams(
             type = ParamType.JSON,
             value = {
-                    @ApiParam(name = "id",  required = true, description = "订单编号id"),
+                    @ApiParam(name = "id", required = true, description = "订单编号id"),
             })
     @ApiRespParams({
             @ApiParam(name = "code", description = "1操作成功，0操作失败", dataType = DataType.NUMBER),
@@ -187,6 +190,7 @@ public class PassengerOrderController {
             order.setStatus(5);
             orderService.save(order);
             //发起新订单
+            order.setAppointmentTime(new Timestamp(System.currentTimeMillis()));
             order.setId(null);
             order.setOrderTime(null);
             order.setStatus(0);
@@ -204,19 +208,13 @@ public class PassengerOrderController {
     //获取我的订单列表
     @ApiAction(name = "获取我的订单列表", mapping = "getMyOrders", method = Method.POST)
     @PostMapping("getMyOrders")
-    @ResponseBody
     @ApiReqParams(
             value = {
                     @ApiParam(name = "pageSize", defaultValue = "10", dataType = DataType.NUMBER, description = "每页条目数"),
                     @ApiParam(name = "currPage", defaultValue = "1", dataType = DataType.NUMBER, description = "当前页，即要获取的页")
             }, type = ParamType.JSON
     )
-    @ApiRespParams({
-            @ApiParam(name = "code", description = "1操作成功，0操作失败", dataType = DataType.NUMBER),
-            @ApiParam(name = "msg", description = "错误或成功消息"),
-            @ApiParam(name = "data", description = "成功或错误信息数据", dataType = DataType.OBJECT),
-            @ApiParam(name = "debugMsg", description = "调试信息，仅供开发调试时参考，不用理他"),
-    })
+    @ApiRespParams(description = "订单状态,0等待接单，1被接单，2订单完成，3订单取消，4订单超时，5订单已重置")
     public Msg getOrders(@RequestBody PageInfo pageInfo, @SessionAttribute(name = "user") User passenger) {
         return Msg.successData(orderService.findPassengerOrders(passenger, pageInfo));
     }

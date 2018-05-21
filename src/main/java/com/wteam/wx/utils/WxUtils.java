@@ -25,6 +25,9 @@ public class WxUtils {
 
     private static final Logger log = LoggerFactory.getLogger(WxUtils.class);
 
+    //临时保存AccessToken
+    private static AccessToken accessToken = null;
+
     /**
      * 获取access_token
      *
@@ -32,20 +35,22 @@ public class WxUtils {
      */
     public static AccessToken fetchAccessToken() {
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
-        Properties p = new Properties();
-        try {
-            p.load(TemplateUtils.class.getClassLoader().getResourceAsStream("wx.properties"));
-
-            url = url.replaceAll("APPID", p.getProperty("appid"));
-            url = url.replaceAll("APPSECRET", p.getProperty("appsecret"));
-
-            String jsonText = SSLUtils.httpsGet(new URI(url));
-            System.out.println(jsonText);
-
-            return new ObjectMapper().readValue(jsonText, AccessToken.class);
-        } catch (URISyntaxException | IOException e) {
-            return null;
+        if (accessToken == null || System.currentTimeMillis() > (accessToken.getFetch_time()
+                + Long.parseLong(accessToken.getExpires_in()) * 1000 - 1000 * 30)) {
+            Properties p = new Properties();
+            String jsonText;
+            try {
+                p.load(TemplateUtils.class.getClassLoader().getResourceAsStream("wx.properties"));
+                url = url.replaceAll("APPID", p.getProperty("appid"));
+                url = url.replaceAll("APPSECRET", p.getProperty("appsecret"));
+                jsonText = SSLUtils.httpsGet(new URI(url));
+                accessToken = new ObjectMapper().readValue(jsonText, AccessToken.class);
+                accessToken.setFetch_time(System.currentTimeMillis());
+            } catch (URISyntaxException | IOException e) {
+                log.error("获取AccessToken失败：", e);
+            }
         }
+        return accessToken;
     }
 
 

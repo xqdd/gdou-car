@@ -13,6 +13,7 @@ public class Msg {
 
     public static Integer CODE_FAILED = 0;
     public static Integer CODE_SUCCESS = 1;
+    public static Integer CODE_AUTHORITY = -1;
 
     private Integer code;
     private Object data;
@@ -50,8 +51,20 @@ public class Msg {
         this.msg = msg;
     }
 
+    public Msg(Integer code) {
+        this.code = code;
+    }
+
     public static Msg failedDetail(String msg, Object errors) {
         return new Msg(CODE_FAILED, msg, errors);
+    }
+
+    public static Msg failed() {
+        return new Msg(CODE_FAILED);
+    }
+
+    public static Msg success() {
+        return new Msg(CODE_SUCCESS);
     }
 
     public String getDebugMsg() {
@@ -102,8 +115,16 @@ public class Msg {
         return new Msg(CODE_FAILED, msg);
     }
 
+    public static Msg authority(String msg) {
+        return new Msg(CODE_AUTHORITY, msg);
+    }
+
     public static Msg failedAndDebug(String msg, String debugMsg) {
         return new Msg(CODE_FAILED, msg, debugMsg);
+    }
+
+    public static Msg authorityAndDebug(String msg, String debugMsg) {
+        return new Msg(CODE_AUTHORITY, msg, debugMsg);
     }
 
 
@@ -115,7 +136,6 @@ public class Msg {
     public static Msg failedDataMsg(String... data) {
         return new Msg(CODE_FAILED, data2Map(data));
     }
-
 
 
     public static Msg successData(Object data) {

@@ -1,5 +1,6 @@
 package com.wteam.car.bean.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wteam.car.utils.jsonview.OrderGroup;
 
 import javax.persistence.Entity;
@@ -13,15 +14,22 @@ public class User {
 
 
     @Id
-    @NotEmpty(groups = {OrderGroup.miniAppSaveUser.class})
+    @NotEmpty(groups = {OrderGroup.miniAppSaveUser.class, OrderGroup.id.class})
     private String unionId;
+
+
+    @JsonIgnore
+    private String webOpenid;
+
+    @JsonIgnore
+    private String appletOpenid;
 
     @NotEmpty(groups = {OrderGroup.miniAppSaveUser.class})
     private String nickName;
-    @NotEmpty(groups = {OrderGroup.PassengerOrder.add.class,OrderGroup.DriverOrder.takeOrder.class})
+    @NotEmpty(groups = {OrderGroup.PassengerOrder.add.class, OrderGroup.DriverOrder.takeOrder.class})
     private String trueName;
 
-    @NotEmpty(groups = {OrderGroup.PassengerOrder.add.class,OrderGroup.DriverOrder.takeOrder.class})
+    @NotEmpty(groups = {OrderGroup.PassengerOrder.add.class, OrderGroup.DriverOrder.takeOrder.class})
     private String phoneNumber;
 
     @NotEmpty(groups = {OrderGroup.miniAppSaveUser.class})
@@ -34,13 +42,31 @@ public class User {
 
     //作为乘客拥有的订单
     @OneToMany(mappedBy = "passenger")
+    @JsonIgnore
     private List<Order> passengerOrder;
 
 
     //作为司机拥有的订单
     @OneToMany(mappedBy = "driver")
+    @JsonIgnore
     private List<Order> driverOrders;
 
+
+    public String getWebOpenid() {
+        return webOpenid;
+    }
+
+    public void setWebOpenid(String webOpenid) {
+        this.webOpenid = webOpenid;
+    }
+
+    public String getAppletOpenid() {
+        return appletOpenid;
+    }
+
+    public void setAppletOpenid(String appletOpenid) {
+        this.appletOpenid = appletOpenid;
+    }
 
     public List<Order> getPassengerOrder() {
         return passengerOrder;

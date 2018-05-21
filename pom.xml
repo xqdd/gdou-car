@@ -201,7 +201,7 @@
         <dependency>
             <groupId>com.github.liupeng328</groupId>
             <artifactId>api-doc</artifactId>
-            <version>83f6af6f79</version>
+            <version>5d90269390</version>
         </dependency>
 
 

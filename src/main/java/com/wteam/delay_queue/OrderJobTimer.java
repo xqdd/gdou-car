@@ -38,9 +38,10 @@ public class OrderJobTimer {
                     sleep();
                     continue;
                 }
-                while (jobs.first().getDelayTime() < System.currentTimeMillis()) {
+                while (jobs.size() > 0 && jobs.first().getDelayTime() < System.currentTimeMillis()) {
                     executorService.execute(orderJobHandler.getThread(jobs.pollFirst()));
                 }
+
                 sleep();
             }
 

@@ -1,14 +1,12 @@
 package com.wteam.car.bean.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wteam.car.utils.jsonview.OrderGroup;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.Valid;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -24,7 +22,8 @@ public class Order {
     private String id;
 
     //级联更新：指A类新增或者变化，会级联B对象（新增或者变化）
-    @ManyToOne(cascade = CascadeType.MERGE)
+//    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @Valid
     @NotNull(groups = {OrderGroup.PassengerOrder.add.class})
     private User passenger;
@@ -42,12 +41,14 @@ public class Order {
     @NotEmpty(groups = {OrderGroup.PassengerOrder.add.class})
     private String destination;
 
-    @Min(value = 0, groups = {OrderGroup.PassengerOrder.add.class})
+    @Min(value = 1, groups = {OrderGroup.PassengerOrder.add.class})
+    @NotNull(groups = {OrderGroup.PassengerOrder.add.class})
     private BigDecimal price;
 
     //预约时间
     @NotNull(groups = {OrderGroup.PassengerOrder.add.class})
-    @Future(groups = {OrderGroup.PassengerOrder.add.class})
+    @FutureOrPresent(groups = {OrderGroup.PassengerOrder.add.class})
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private Timestamp appointmentTime;
 
     //有效时长
@@ -58,16 +59,21 @@ public class Order {
     //备注
     private String ps;
 
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private Timestamp createTime;
 
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private Timestamp cancelTime;
 
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private Timestamp completeTime;
 
     //失效时间
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private Timestamp invalidedTime;
 
     //接单时间
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private Timestamp orderTime;
 
     //状态,0等待接单，1被接单，2订单完成，3订单取消，4订单超时，5订单已重置

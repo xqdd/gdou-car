@@ -40,7 +40,6 @@ public class WxController extends BaseController {
     @GetMapping(value = "wxWeb/login")
     public Msg login(String code, String state, HttpSession session, HttpServletResponse response) {
 
-        System.out.println("wxWeb/login：" + session.getId());
         if (code == null || code.trim().isEmpty()) {
             return Msg.failed("参数有误");
         }
@@ -61,8 +60,13 @@ public class WxController extends BaseController {
                     WxUser wxUser = Oauth2Utils.get_wx_user(token);
 
                     // 判断用户是否已经存在
-                    Optional<User> optionalUser = userService.findById(wxUser.getOpenid());
-                    user = optionalUser.orElse(new User(wxUser.getUnionid(), wxUser.getSex()));
+                    Optional<User> optionalUser = userService.findById(wxUser.getUnionid());
+                    if (!optionalUser.isPresent()) {
+                        user = new User(wxUser.getUnionid(), wxUser.getSex());
+                        user.setWebOpenid(wxUser.getOpenid());
+                    }else{
+                        user = optionalUser.get();
+                    }
 
                     //更新用户信息
                     user.setHeadimgurl(wxUser.getHeadimgurl());
@@ -108,8 +112,6 @@ public class WxController extends BaseController {
             @ApiParam(name = "code", description = "1（是）/0（否）"),
     })
     public Msg isLogined(HttpSession session) {
-        System.out.println("wxWeb/isLogined：" + session.getId());
-
         if (session.getAttribute("user") == null) {
             return Msg.failed();
         } else {
@@ -187,5 +189,15 @@ public class WxController extends BaseController {
 
     }
 
+
+    @GetMapping(value = "getUserInfo")
+    @ApiAction(name = "获取用户数据（用于数据预加载）", mapping = "getUserInfo")
+    @ApiRespParams({
+            @ApiParam(name = "code", description = "1或0"),
+            @ApiParam(name = "data", description = "用户数据"),
+    })
+    public Msg getUserInfo(@SessionAttribute("user") User user) {
+        return Msg.successData(user);
+    }
 
 }

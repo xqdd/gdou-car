@@ -6,6 +6,17 @@ public class AccessToken {
 
     private String expires_in;
 
+    //获取时间
+    private Long fetch_time;
+
+
+    public Long getFetch_time() {
+        return fetch_time;
+    }
+
+    public void setFetch_time(Long fetch_time) {
+        this.fetch_time = fetch_time;
+    }
 
     public String getAccess_token() {
         return access_token;

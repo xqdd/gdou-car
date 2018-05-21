@@ -8,6 +8,8 @@ public class CommUtils {
     public final static SimpleDateFormat DATE_YEAR_MOUTH_FORMAT = new SimpleDateFormat("yyyyMM");
     //普通日期格式化
     public final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    //mysql日期时间格式化
+    public final static SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     //精确到微秒日期时间格式化
     public final static SimpleDateFormat DATETIME_FORMAT_WITH_MS = new SimpleDateFormat("yyyy年MM月dd号H时m分s.sss秒");
 
@@ -30,7 +32,6 @@ public class CommUtils {
     public static boolean isBlank(List o) {
         return o == null || o.isEmpty();
     }
-
 
 
 }
